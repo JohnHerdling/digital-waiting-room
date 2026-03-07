@@ -1,4 +1,4 @@
-class Assistent{
+class Assistant{
     
     registerPatient(name){
         const Patient = require("./Patient");
@@ -27,4 +27,4 @@ class Assistent{
 
 }
 
-module.exports = Assistent;
+module.exports = Assistant;
