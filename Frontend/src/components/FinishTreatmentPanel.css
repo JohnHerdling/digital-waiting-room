@@ -1,0 +1,39 @@
+.finish-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.finish-card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fbfd;
+  border: 1px solid #dde7f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.finish-card-item strong {
+  color: #16324f;
+}
+
+.finish-card-item p {
+  margin: 6px 0 0;
+  color: #5f7185;
+}
+
+.finish-card-item button {
+  background: #d94841;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.finish-card-item button:hover {
+  background: #b93831;
+}
