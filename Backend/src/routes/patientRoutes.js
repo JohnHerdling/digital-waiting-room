@@ -1,35 +1,39 @@
 const express = require("express");
 const router = express.Router();
-const { waitingList } = require("../data/store");
+const prisma = require("../prismaClient");
 
-function getCurrentTime() {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
+// Alle Patienten abrufen
+router.get("/", async (req, res) => {
+    try {
+        const patients = await prisma.patient.findMany();
+        res.json(patients);
+    }  catch (error) {
+    console.error("GET FEHLER:", error);
+    res.status(500).json({ error: "Fehler beim Erstellen des Patienten." });
+    }
+});
 
-router.post("/", (req, res) => {
-  const { name } = req.body;
+// Neuen Patienten anlegen
+router.post("/", async (req, res) => {
+    try {
+        const { name } = req.body;
 
-  if (!name || !name.trim()) {
-    return res.status(400).json({
-      message: "Patientenname ist erforderlich."
-    });
-  }
+        if (!name) {
+            return res.status(400).json({ error: "Name ist erforderlich." });
+        }
 
-  const newPatient = {
-    name: name.trim(),
-    arrivalTime: getCurrentTime(),
-    status: "wartet"
-  };
+        const patient = await prisma.patient.create({
+            data: {
+                name: name,
+                status: "wartend"
+            }
+        });
 
-  waitingList.push(newPatient);
-
-  res.status(201).json({
-    message: "Patient wurde registriert und zur Warteliste hinzugefügt.",
-    patient: newPatient
-  });
+        res.status(201).json(patient);
+    } catch (error) {
+    console.error("POST-FEHLER:", error);
+    res.status(500).json({ error: "Fehler beim Erstellen des Patienten." });
+    }
 });
 
 module.exports = router;
