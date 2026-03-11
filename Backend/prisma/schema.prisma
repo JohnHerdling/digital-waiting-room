@@ -7,14 +7,18 @@ datasource db {
 }
 
 model Patient {
-  id        Int      @id @default(autoincrement())
-  name      String
-  status    String
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  status     String
+  createdAt  DateTime @default(now())
+
+  currentRoom Room?   @relation("CurrentRoomPatient")
 }
 
 model Room {
-  id           Int  @id @default(autoincrement())
-  roomNumber   Int  @unique
-  currentPatientId Int?
+  id               Int      @id @default(autoincrement())
+  roomNumber       Int      @unique
+  currentPatientId Int?     @unique
+
+  currentPatient   Patient? @relation("CurrentRoomPatient", fields: [currentPatientId], references: [id])
 }

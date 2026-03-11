@@ -1,75 +1,171 @@
 const express = require("express");
 const router = express.Router();
-const { waitingList, rooms } = require("../data/store");
+const prisma = require("../prismaClient");
 
-router.get("/", (req, res) => {
-  res.json(rooms);
+// Alle Räume abrufen
+router.get("/", async (req, res) => {
+    try {
+        const rooms = await prisma.room.findMany({
+            orderBy: {
+                roomNumber: "asc"
+            },
+            include: {
+                currentPatient: {
+                    select: {
+                        id: true,
+                        name: true,
+                        status: true,
+                        createdAt: true
+                    }
+                }
+            }
+        });
+
+        res.json(rooms);
+
+    } catch (error) {
+        console.error("ROOM GET FEHLER:", error);
+        res.status(500).json({ error: "Fehler beim Laden der Räume." });
+    }
 });
 
-router.post("/:roomNumber/assign", (req, res) => {
-  const roomNumber = Number(req.params.roomNumber);
-  const { name, arrivalTime } = req.body;
+// Neuen Raum anlegen
+router.post("/", async (req, res) => {
+    try {
+        const { roomNumber } = req.body;
 
-  const room = rooms.find((r) => r.roomNumber === roomNumber);
+        if (!roomNumber) {
+            return res.status(400).json({ error: "Raumnummer ist erforderlich." });
+        }
 
-  if (!room) {
-    return res.status(404).json({
-      message: "Raum wurde nicht gefunden."
-    });
-  }
+        const room = await prisma.room.create({
+            data: {
+                roomNumber: roomNumber,
+                currentPatientId: null
+            }
+        });
 
-  if (room.currentPatient) {
-    return res.status(400).json({
-      message: "Raum ist bereits belegt."
-    });
-  }
-
-  const patientIndex = waitingList.findIndex(
-    (patient) =>
-      patient.name === name && patient.arrivalTime === arrivalTime
-  );
-
-  if (patientIndex === -1) {
-    return res.status(404).json({
-      message: "Patient wurde in der Warteliste nicht gefunden."
-    });
-  }
-
-  const patient = waitingList.splice(patientIndex, 1)[0];
-  patient.status = "im Raum";
-  room.currentPatient = patient;
-
-  res.json({
-    message: `Patient wurde Raum ${roomNumber} zugewiesen.`,
-    room
-  });
+        res.status(201).json(room);
+    } catch (error) {
+        console.error("ROOM POST FEHLER:", error);
+        res.status(500).json({ error: "Fehler beim Erstellen des Raums." });
+    }
 });
 
-router.post("/:roomNumber/finish", (req, res) => {
-  const roomNumber = Number(req.params.roomNumber);
+// Nächsten wartenden Patienten dem ersten freien Raum zuweisen
+router.post("/assign-next", async (req, res) => {
+    try {
+        // 1. freien Raum suchen
+        const freeRoom = await prisma.room.findFirst({
+            where: {
+                currentPatientId: null
+            },
+            orderBy: {
+                roomNumber: "asc"
+            }
+        });
 
-  const room = rooms.find((r) => r.roomNumber === roomNumber);
+        if (!freeRoom) {
+            return res.status(400).json({ error: "Kein freier Raum verfügbar." });
+        }
 
-  if (!room) {
-    return res.status(404).json({
-      message: "Raum wurde nicht gefunden."
-    });
-  }
+        // 2. nächsten wartenden Patienten suchen
+        const nextPatient = await prisma.patient.findFirst({
+            where: {
+                status: "wartend"
+            },
+            orderBy: {
+                createdAt: "asc"
+            }
+        });
 
-  if (!room.currentPatient) {
-    return res.status(400).json({
-      message: "In diesem Raum befindet sich kein Patient."
-    });
-  }
+        if (!nextPatient) {
+            return res.status(400).json({ error: "Kein wartender Patient vorhanden." });
+        }
 
-  room.currentPatient.status = "fertig";
-  const finishedPatient = room.currentPatient;
-  room.currentPatient = null;
+        // 3. Raum aktualisieren
+        const updatedRoom = await prisma.room.update({
+            where: {
+                id: freeRoom.id
+            },
+            data: {
+                currentPatientId: nextPatient.id
+            }
+        });
 
-  res.json({
-    message: `Behandlung in Raum ${roomNumber} wurde beendet.`,
-    patient: finishedPatient
-  });
+        // 4. Patientenstatus ändern
+        const updatedPatient = await prisma.patient.update({
+            where: {
+                id: nextPatient.id
+            },
+            data: {
+                status: "im Raum"
+            }
+        });
+
+        res.json({
+            message: "Patient wurde einem Raum zugewiesen.",
+            room: updatedRoom,
+            patient: updatedPatient
+        });
+    } catch (error) {
+        console.error("ASSIGN NEXT FEHLER:", error);
+        res.status(500).json({ error: "Fehler bei der Raumzuweisung." });
+    }
+});
+
+// Behandlung in einem Raum beenden
+router.post("/:id/finish", async (req, res) => {
+    try {
+        const roomId = parseInt(req.params.id);
+
+        // 1. Raum laden
+        const room = await prisma.room.findUnique({
+            where: {
+                id: roomId
+            }
+        });
+
+        if (!room) {
+            return res.status(404).json({ error: "Raum nicht gefunden." });
+        }
+
+        // 2. Prüfen, ob überhaupt ein Patient im Raum ist
+        if (!room.currentPatientId) {
+            return res.status(400).json({ error: "In diesem Raum befindet sich kein Patient." });
+        }
+
+        const patientId = room.currentPatientId;
+
+        // 3. Patient auf "fertig" setzen
+        const updatedPatient = await prisma.patient.update({
+            where: {
+                id: patientId
+            },
+            data: {
+                status: "fertig"
+            }
+        });
+
+        // 4. Raum wieder freigeben
+        const updatedRoom = await prisma.room.update({
+            where: {
+                id: roomId
+            },
+            data: {
+                currentPatientId: null
+            }
+        });
+
+        res.json({
+            message: "Behandlung erfolgreich beendet.",
+            room: updatedRoom,
+            patient: updatedPatient
+        });
+    } catch (error) {
+        console.error("FINISH FEHLER:", error);
+        res.status(500).json({ error: "Fehler beim Beenden der Behandlung." });
+    }
 });
 
 module.exports = router;
