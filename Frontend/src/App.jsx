@@ -19,19 +19,22 @@ function App() {
   const [rooms, setRooms] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  async function loadData() {
-    try {
-      const waitingPatients = await getWaitingList();
-      const roomData = await getRooms();
+async function loadData() {
+  try {
+    const waitingPatients = await getWaitingList();
+    const roomData = await getRooms();
 
-      setWaitingList(waitingPatients);
-      setRooms(roomData);
-      setErrorMessage("");
-    } catch (error) {
-      console.error("Fehler beim Laden der Daten:", error);
-      setErrorMessage("Die Daten konnten nicht geladen werden.");
-    }
+    setWaitingList(Array.isArray(waitingPatients) ? waitingPatients : []);
+    setRooms(Array.isArray(roomData) ? roomData : []);
+
+    setErrorMessage("");
+  } catch (error) {
+    console.error("Fehler beim Laden der Daten:", error);
+    setWaitingList([]);
+    setRooms([]);
+    setErrorMessage("Die Daten konnten nicht geladen werden.");
   }
+}
 
   useEffect(() => {
     loadData();

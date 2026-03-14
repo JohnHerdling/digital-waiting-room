@@ -1,7 +1,7 @@
 import React from "react";
 import "./FinishTreatmentPanel.css";
 
-function FinishTreatmentPanel({ rooms, onFinishTreatment }) {
+function FinishTreatmentPanel({ rooms = [], onFinishTreatment }) {
   const occupiedRooms = rooms.filter((room) => room.currentPatient);
 
   return (

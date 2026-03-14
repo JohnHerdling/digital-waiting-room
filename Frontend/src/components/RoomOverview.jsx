@@ -1,7 +1,7 @@
 import React from "react";
 import "./RoomOverview.css";
 
-function RoomOverview({ rooms }) {
+function RoomOverview({ rooms = [] }) {
   return (
     <div className="room-overview">
       <div className="section-header">

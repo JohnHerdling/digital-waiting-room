@@ -1,7 +1,7 @@
 import React from "react";
 import "./WaitingList.css";
 
-function WaitingList({ patients }) {
+function WaitingList({ patients  = []}) {
   return (
     <div className="waiting-list">
       <div className="section-header">
