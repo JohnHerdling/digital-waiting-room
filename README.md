@@ -88,9 +88,3 @@ Prisma wird verwendet, um die Kommunikation zwischen Anwendung und Datenbank zu 
 
 Jest wird für Unit-Tests der Backendlogik verwendet.
 
----
-
-# Softwarearchitektur
-
-Die Anwendung folgt einer klassischen **Client-Server-Architektur**:
-
