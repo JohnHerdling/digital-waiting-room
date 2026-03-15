@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./PatientForm.css";
 
-function PatientForm({ onCreatePatient }) {
+function PatientForm({ onCreatePatient, errorMessage }) {
   const [name, setName] = useState("");
 
   async function handleSubmit(event) {
@@ -16,20 +16,22 @@ function PatientForm({ onCreatePatient }) {
   }
 
   return (
-    <div className="patient-form-wrapper">
-      <h2>Patient registrieren</h2>
+  <div className="patient-form-wrapper">
+    <h2>Patient registrieren</h2>
 
-      <form className="patient-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Patientenname"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
-        <button type="submit">Patient registrieren</button>
-      </form>
-    </div>
-  );
+    <form className="patient-form" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Patientenname"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+      />
+      <button type="submit">Patient registrieren</button>
+    </form>
+
+    {errorMessage && <p>{errorMessage}</p>}
+  </div>
+);
 }
 
 export default PatientForm;

@@ -22,6 +22,15 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ error: "Name ist erforderlich." });
         }
 
+         // Validierung: nur Buchstaben und Leerzeichen erlauben
+        const nameRegex = /^[A-Za-zÄÖÜäöüß\s]+$/;
+
+        if (!nameRegex.test(name)) {
+        return res.status(400).json({
+            error: "Der Patientenname darf nur Buchstaben enthalten."
+        });
+        }
+
         const patient = await prisma.patient.create({
             data: {
                 name: name,

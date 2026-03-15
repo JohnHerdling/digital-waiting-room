@@ -40,15 +40,16 @@ async function loadData() {
     loadData();
   }, []);
 
-  async function handleCreatePatient(name) {
-    try {
-      await createPatient(name);
-      await loadData();
-    } catch (error) {
-      console.error("Fehler beim Erstellen des Patienten:", error);
-      setErrorMessage("Patient konnte nicht erstellt werden.");
-    }
+ async function handleCreatePatient(name) {
+  try {
+    setErrorMessage("");
+    await createPatient(name);
+    await loadData();
+  } catch (error) {
+    console.error("Fehler beim Erstellen des Patienten:", error);
+    setErrorMessage(error.message || "Patient konnte nicht erstellt werden.");
   }
+}
 
   async function handleAssignNextPatient() {
     try {
@@ -91,7 +92,10 @@ async function loadData() {
         </header>
 
         <section className="top-panel">
-          <PatientForm onCreatePatient={handleCreatePatient} />
+          <PatientForm 
+            onCreatePatient={handleCreatePatient}
+            errorMessage={errorMessage}
+          />
         </section>
 
         <div className="action-bar">
@@ -99,8 +103,6 @@ async function loadData() {
             Nächsten Patienten zuweisen
           </button>
         </div>
-
-        {errorMessage && <div className="error-banner">{errorMessage}</div>}
 
         <main className="dashboard-grid">
           <section className="dashboard-card">
