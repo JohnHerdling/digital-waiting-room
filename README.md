@@ -1,90 +1,82 @@
-# Digitales Wartezimmer
+# Digital Waiting Room
 
-Webbasierte Anwendung zur Organisation des Patientenflusses in einer Arztpraxis.
+Web-based application for managing patient flow in a medical practice.
 
-Das Projekt wurde im Rahmen des Moduls **„Projekt: Software Development“** im Studiengang **Softwareentwicklung an der IU Internationale Hochschule** entwickelt.
+This project was developed as part of the module **“Project: Software Development”** in the Software Engineering program at IU International University.
 
-Die Anwendung ermöglicht es, Patient:innen digital zu registrieren, automatisch in einer Warteliste zu priorisieren und Untersuchungsräumen zuzuweisen.
-
----
-
-# Projektziel
-
-In vielen Arztpraxen wird der Patientenfluss noch manuell organisiert, beispielsweise über Papierlisten oder einfache Tabellen. Dies führt häufig zu unklaren Zuständen, ineffizienter Raumkoordination und unnötigen Wartezeiten.
-
-Ziel dieser Anwendung ist die Entwicklung eines **digitalen Dashboards**, das folgende Aufgaben unterstützt:
-
-- digitale Registrierung von Patient:innen
-- transparente Wartelistenverwaltung
-- Übersicht über Untersuchungsräume
-- strukturierte Organisation des Patientenflusses
-
-Die Anwendung verarbeitet **keine medizinischen Daten** und dient ausschließlich der organisatorischen Praxisverwaltung.
+The application enables digital patient registration, automatic prioritization in a waiting list, and assignment to examination rooms.
 
 ---
 
-# Hauptfunktionen
+## Project Goal
 
-Die Anwendung stellt folgende Kernfunktionalitäten bereit:
+In many medical practices, patient flow is still managed manually, for example using paper lists or simple spreadsheets. This often leads to unclear states, inefficient room coordination, and unnecessary waiting times.
 
-### Patientenmanagement
-- Registrierung neuer Patient:innen
-- automatische Speicherung der Ankunftszeit
+The goal of this application is to develop a digital dashboard that supports the following:
 
-### Warteliste
-- Anzeige aller wartenden Patient:innen
-- automatische Sortierung nach Ankunftszeit (FIFO-Prinzip)
+- digital patient registration  
+- transparent waiting list management  
+- overview of examination rooms  
+- structured organization of patient flow  
 
-### Raumverwaltung
-- drei Untersuchungsräume
-- Anzeige des Raumstatus (frei / belegt)
+The application does **not process medical data** and is intended solely for organizational purposes within a medical practice.
 
-### Patientenfluss
-- Zuweisung des nächsten wartenden Patienten zu einem Raum
-- Anzeige des aktuell behandelten Patienten
-- Beenden einer Behandlung
+---
+
+## Main Features
+
+### Patient Management
+- Registration of new patients  
+- Automatic recording of arrival time  
+
+### Waiting List
+- Display of all waiting patients  
+- Automatic sorting by arrival time (FIFO principle)  
+
+### Room Management
+- Three examination rooms  
+- Display of room status (available / occupied)  
+
+### Patient Flow
+- Assignment of the next waiting patient to a room  
+- Display of the currently treated patient  
+- Completion of a treatment  
 
 ### Dashboard
-- Übersicht über Warteliste
-- Status der Untersuchungsräume
-- aktuell aktive Behandlungen
+- Overview of the waiting list  
+- Status of examination rooms  
+- Currently active treatments  
 
 ---
 
-# Technologie-Stack
+## Technology Stack
 
-Die Anwendung basiert auf einer klassischen **Client-Server-Architektur**.
+The application is based on a classic client-server architecture.
 
-## Frontend
+### Frontend
+- React  
+- Vite  
+- CSS  
 
-- React
-- Vite
-- CSS
+The frontend is implemented as a Single Page Application (SPA) and communicates with the backend via a REST API.
 
-Das Frontend stellt eine **Single Page Application (SPA)** dar und kommuniziert über eine REST-API mit dem Backend.
+### Backend
+- Node.js  
+- Express  
 
-## Backend
+The backend implements the application’s business logic and provides REST endpoints.
 
-- Node.js
-- Express
+### Database
+- SQLite  
 
-Das Backend implementiert die Geschäftslogik der Anwendung und stellt die REST-Endpunkte bereit.
+Data is stored locally in a SQLite database.
 
-## Datenbank
+### ORM
+- Prisma  
 
-- SQLite
+Prisma is used to abstract communication between the application and the database.
 
-Die Daten werden lokal in einer SQLite-Datenbank gespeichert.
+### Testing
+- Jest  
 
-## ORM
-
-- Prisma
-
-Prisma wird verwendet, um die Kommunikation zwischen Anwendung und Datenbank zu abstrahieren.
-
-## Tests
-
-- Jest
-
-Jest wird für Unit-Tests der Backendlogik verwendet.
-
+Jest is used for unit testing of the backend logic.
