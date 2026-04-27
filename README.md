@@ -12,6 +12,7 @@ The application enables digital patient registration, automatic prioritization i
 
 The following screenshot shows the Digital Waiting Room application in action.  
 It provides an overview of the user interface used to manage patient registration, waiting lists, and examination rooms.
+
 <img width="1365" height="994" alt="Screenshot Digitales Wartezimmer" src="https://github.com/user-attachments/assets/bdab4106-ddcc-4077-bd2d-f9a691faa277" />
 
 
